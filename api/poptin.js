@@ -4,6 +4,19 @@ function normalize(str) {
       .trim()
       .toLowerCase();
   }
+
+  function normalizePoptinName(str) {
+    let s = (str || "").toString().trim().toLowerCase();
+  
+    // Remove prefixos comuns (adicione outros se existirem)
+    s = s.replace(/^simula[cç][aã]o de financiamento\s*-\s*/i, "");
+    s = s.replace(/^simulacao de financiamento\s*-\s*/i, ""); // redundante, mas ok
+  
+    // Normaliza espaços múltiplos
+    s = s.replace(/\s+/g, " ").trim();
+  
+    return s;
+  }
   
   async function getMappingFromCsv(csvUrl) {
     const resp = await fetch(csvUrl);
@@ -27,7 +40,7 @@ function normalize(str) {
   
     for (let i = 1; i < lines.length; i++) {
       const cols = lines[i].split(delimiter);
-      const poptinName = normalize(cols[idxPoptin]);
+      const poptinName = normalizePoptinName(cols[idxPoptin]);
       const clientListingId = (cols[idxClient] || "").toString().trim();
       const active = idxActive >= 0 ? normalize(cols[idxActive]) : "true";
   
@@ -44,7 +57,7 @@ function normalize(str) {
     if (req.method !== "POST") {
       return res.status(405).json({ success: false, message: "Method not allowed" });
     }
-    
+
     const expectedSecret = process.env.WEBHOOK_SECRET;
     const incomingSecret = req.query?.secret;
 
@@ -89,7 +102,7 @@ function normalize(str) {
       const url = body.url || body.referrer || "";
   
       // Identify empreendimento by poptin_name (or fallback)
-      const poptinName = normalize(body.poptin_name || body.source || ""); // source="Poptin" não ajuda, mas fica como fallback
+      const poptinName = normalizePoptinName(body.poptin_name || body.source || ""); // source="Poptin" não ajuda, mas fica como fallback
   
       const mapping = await getMappingFromCsv(SHEET_CSV_URL);
       const clientListingId = mapping.get(poptinName) || DEFAULT_CLIENT_LISTING_ID;
