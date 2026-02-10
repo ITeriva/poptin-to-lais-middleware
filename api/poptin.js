@@ -44,6 +44,17 @@ function normalize(str) {
     if (req.method !== "POST") {
       return res.status(405).json({ success: false, message: "Method not allowed" });
     }
+
+    const incomingSecret = req.headers["x-webhook-secret"];
+    const expectedSecret = process.env.WEBHOOK_SECRET;
+
+    if (!expectedSecret) {
+      return res.status(500).json({ success: false, message: "Missing WEBHOOK_SECRET env var" });
+    }
+
+    if (!incomingSecret || incomingSecret !== expectedSecret) {
+      return res.status(403).json({ success: false, message: "Forbidden" });
+    }
   
     try {
       const body = typeof req.body === "string" ? JSON.parse(req.body) : req.body;
