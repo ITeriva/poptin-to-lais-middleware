@@ -105,6 +105,14 @@ function normalize(str) {
       const poptinName = normalizePoptinName(body.poptin_name || body.source || ""); // source="Poptin" não ajuda, mas fica como fallback
   
       const mapping = await getMappingFromCsv(SHEET_CSV_URL);
+        console.log("==== DEBUG START ====");
+        console.log("Poptin raw:", body.poptin_name);
+        console.log("Poptin normalized:", poptinName);
+        console.log("Map size:", mapping.size);
+        console.log("Has exact key:", mapping.has(poptinName));
+        console.log("Resolved ID:", mapping.get(poptinName));
+        console.log("Fallback ID:", DEFAULT_CLIENT_LISTING_ID);
+        console.log("==== DEBUG END ====");
       const clientListingId = mapping.get(poptinName) || DEFAULT_CLIENT_LISTING_ID;
   
       // formText nunca vazio
