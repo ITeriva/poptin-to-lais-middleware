@@ -91,15 +91,15 @@ export default async function handler(req, res) {
   }
 
   // Vars
-  const LASTRO_URL = process.env.LASTRO_URL;     // seu endpoint do Lastro/Lais
+  const LAIS_URL = process.env.LAIS_URL;     // seu endpoint do Lastro/Lais
   const ORIGIN = process.env.ORIGIN || "PropWebsiteLais";
 
   // Auditoria (Apps Script)
   const AUDIT_URL = process.env.AUDIT_URL;       // https://script.google.com/macros/s/.../exec
   const AUDIT_SECRET = process.env.AUDIT_SECRET; // secret do Apps Script (pode ser igual ao WEBHOOK_SECRET ou outro)
 
-  if (!LASTRO_URL) {
-    return res.status(500).json({ success: false, message: "Missing LASTRO_URL env var" });
+  if (!LAIS_URL) {
+    return res.status(500).json({ success: false, message: "Missing LAIS_URL env var" });
   }
 
   const receiptId = buildReceiptId();
@@ -161,7 +161,7 @@ export default async function handler(req, res) {
     if (url) lastroPayload.link = url;
 
     // 4) Envia pro Lastro/Lais
-    const lastroResp = await safePostJson(LASTRO_URL, lastroPayload);
+    const lastroResp = await safePostJson(LAIS_URL, lastroPayload);
 
     // 5) Auditoria (não quebra o fluxo se falhar)
     if (AUDIT_URL && AUDIT_SECRET) {
