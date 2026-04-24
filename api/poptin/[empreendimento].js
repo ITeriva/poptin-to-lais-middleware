@@ -74,7 +74,7 @@ async function safePostJson(url, payload) {
  * =========================
  */
 export default async function handler(req, res) {
-  // Só POST
+  if (req.query?.debug === "1") { const e = process.env.WEBHOOK_SECRET || ""; const i = String(req.query?.secret || ""); return res.status(200).json({ env_len: e.length, env_f2: e.slice(0,2), env_l2: e.slice(-2), in_len: i.length, in_f2: i.slice(0,2), in_l2: i.slice(-2), matches: i===e, lais_url_set: !!process.env.LAIS_URL, origin: process.env.ORIGIN || null }); } // Só POST
   if (req.method !== "POST") {
     return res.status(405).json({ success: false, message: "Method not allowed" });
   }
